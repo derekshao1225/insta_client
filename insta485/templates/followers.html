@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>insta485</title>
+</head>
+
+<body>
+    <h2>
+        <a href="/">Back to Main Page</a>
+        Insta485
+        <a href="/explore/">explore</a>
+        <a href="/users/{{ logname }}/">{{ logname }}</a>
+    </h2>
+
+    <h1>Followers</h1>
+
+    {%for follower in followers%}
+    <img src="{{follower.user_img_url}}" alt="icon">
+    <a href="/users/{{ follower.username }}/">{{ follower.username }}</a>
+    {%if follower.username != logname %}
+    {% if follower.logname_follows_username %}
+    <p>following</p>
+    <form action="/following/?target={{ url_for('show_followers', username=username)}}" method="post"
+        enctype="multipart/form-data">
+        <input type="submit" name="unfollow" value="unfollow" />
+        <input type="hidden" name="username" value="{{follower.username}}" />
+        <input type="hidden" name="operation" value="unfollow" />
+    </form>
+
+    {% else %}
+    <p> not following</p>
+    <form action="/following/?target={{ url_for('show_followers', username=username)}}" method="post"
+        enctype="multipart/form-data">
+        <input type="submit" name="follow" value="follow" />
+        <input type="hidden" name="username" value="{{follower.username}}" />
+        <input type="hidden" name="operation" value="follow" />
+    </form>
+    {% endif %}
+    {% endif %}
+
+    {% endfor %}
+
+</body>
+
+
+
+
+
+
+</html>

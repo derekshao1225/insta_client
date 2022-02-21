@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>insta485</title>
+</head>
+
+
+<body>
+    <h2>
+        <a href="/">Back to Main Page</a>
+        Insta485
+        <a href="/explore/">explore</a>
+        <a href="/users/{{ logname }}/">{{ logname }}</a>
+    </h2>>
+
+    <p>Discover People</p>
+    {% for nf in not_following %}
+
+    <img src="{{url_for('show_img', name=nf.user_img_url)}}" alt="image">
+    <a href="/users/{{nf.username}}/">{{nf.username}}</a>
+
+    <form action="/following/?target={{url_for('explore')}}" method="post" enctype="multipart/form-data">
+        <input type="submit" name="follow" value="follow" />
+        <input type="hidden" name="username" value="{{nf.username}}" />
+        <input type="hidden" name="operation" value="follow" />
+    </form>
+    </div>
+    {% endfor %}
+
+</html>

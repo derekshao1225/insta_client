@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>insta485</title>
+</head>
+
+
+<body>
+    <h2>
+        <a href="/">Back to Main Page</a>
+        Insta485
+        <a href="/explore/">explore</a>
+        <a href="/users/{{ logname }}/">{{ logname }}</a>
+    </h2>
+
+    <p><img src="{{url_for('show_img',name = filename)}}/">{{fullname}}</p>
+    <form action="/accounts/?target={{url_for('edit')}}" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*" />
+        <input type="text" name="fullname" value="{{fullname}}" required />
+        <input type="text" name="email" value="{{email}}" required />
+        <input type="submit" name="update" value="submit" />
+        <input type="hidden" name="operation" value="edit_account" />
+    </form>
+    <a href="/accounts/password/">Change password</a>
+    <a href="/accounts/delete/">Delete account</a>
+</body>
+
+</html>
