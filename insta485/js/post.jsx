@@ -9,10 +9,9 @@ class Post extends React.Component {
      */
   constructor(props) {
     // Initialize immutable
-    super(props); // key, postid, url
+    super(props);
     // mutable items
     this.state = {
-      comments: [],
       created: '',
       imgUrl: '',
       lognameLikesThis: false,
@@ -21,7 +20,8 @@ class Post extends React.Component {
       owner: '',
       ownerImgUrl: '',
       ownerShowUrl: '',
-      postShowUrl: ''
+      postShowUrl: '',
+      postid: 1,
     };
     this.handleClick = this.handleClick.bind(this);
     this.handleDoubleClick = this.handleDoubleClick.bind(this);
@@ -30,7 +30,7 @@ class Post extends React.Component {
   componentDidMount() {
     // This line automatically assigns this.props.url to the const variable url
     const { url } = this.props;
-    console.log('url is %s', url);
+
     // Call REST API to get the post's information
     fetch(url, { credentials: 'same-origin' })
       .then((response) => {
@@ -39,7 +39,6 @@ class Post extends React.Component {
       })
       .then((data) => {
         this.setState({
-          comments: data.comments,
           created: data.created,
           imgUrl: data.imgUrl,
           lognameLikesThis: data.likes.lognameLikesThis,
@@ -50,46 +49,48 @@ class Post extends React.Component {
           ownerShowUrl: data.ownerShowUrl,
           postShowUrl: data.postShowUrl,
           postid: data.postid,
-          url: data.url
         });
       })
       .catch((error) => console.log(error));
-
-      console.log('from fetch url for post %d', this.state.postid);
-      console.log('from fetch num of likes %d', this.state.numLikes);
   }
 
   handleClick() {
     const {
-      lognameLikesThis, numLikes
+      lognameLikesThis, numLikes, likeUrl, postid,
     } = this.state;
-    const { postid } = this.props
-    const pUrl = `/api/v1/likes/?postid=${postid}`;
-    // user cannot dislike
-    if (!lognameLikesThis) {
+    // user dislikes
+    // console.log('Like url is ', likeUrl);
+    // console.log('lognamelikesthis is ', lognameLikesThis);
+
+    if (lognameLikesThis) {
+      fetch(likeUrl, { credentials: 'same-origin', method: 'DELETE' })
+        .then((response) => {
+          if (!response.ok) throw Error(response.statusText);
+          // return response.json();
+        })
+        .then(() => {
+          this.setState({
+            lognameLikesThis: false,
+            numLikes: numLikes - 1,
+            likeUrl: 'null',
+          });
+        })
+        .catch((error) => console.log(error));
+    } else {
+      // user likes
+      const pUrl = `/api/v1/likes/?postid=${postid}`;
+      // console.log('Liking url is ', pUrl);
       fetch(pUrl, { credentials: 'same-origin', method: 'POST' })
         .then((response) => {
           if (!response.ok) throw Error(response.statusText);
           return response.json();
         })
         .then((data) => {
+          console.log('fetched ', data);
           this.setState({
             lognameLikesThis: true,
             numLikes: numLikes + 1,
-            url: data.url,
-          });
-        })
-        .catch((error) => console.log(error));
-    } else {
-      fetch(pUrl, { credentials: 'same-origin', method: 'DELETE' })
-        .then((response) => {
-          if (!response.ok) throw Error(response.statusText);
-        })
-        .then(() => {
-          this.setState({
-            lognameLikesThis: false,
-            numLikes: numLikes - 1,
-            url: pUrl,
+            likeUrl: data.url,
           });
         })
         .catch((error) => console.log(error));
@@ -98,9 +99,8 @@ class Post extends React.Component {
 
   handleDoubleClick() {
     const {
-      lognameLikesThis, numLikes
+      lognameLikesThis, numLikes, postid,
     } = this.state;
-    const { postid } = this.props
     const pUrl = `/api/v1/likes/?postid=${postid}`;
     // user cannot dislike
     if (!lognameLikesThis) {
@@ -113,20 +113,7 @@ class Post extends React.Component {
           this.setState({
             lognameLikesThis: true,
             numLikes: numLikes + 1,
-            url: data.url,
-          });
-        })
-        .catch((error) => console.log(error));
-    } else {
-      fetch(pUrl, { credentials: 'same-origin', method: 'DELETE' })
-        .then((response) => {
-          if (!response.ok) throw Error(response.statusText);
-        })
-        .then(() => {
-          this.setState({
-            lognameLikesThis: false,
-            numLikes: numLikes - 1,
-            url: pUrl,
+            likeUrl: data.url,
           });
         })
         .catch((error) => console.log(error));
@@ -137,12 +124,12 @@ class Post extends React.Component {
     // This line automatically assigns this.state.imgUrl to the const variable imgUrl
     // and this.state.owner to the const variable owner
     const {
-      comments, created, imgUrl, lognameLikesThis, numLikes, likeUrl, owner,
-      ownerImgUrl, ownerShowUrl, postShowUrl
+      created, imgUrl, lognameLikesThis, numLikes, owner,
+      ownerImgUrl, ownerShowUrl, postShowUrl, postid,
     } = this.state;
-    const { postid, url } = this.props; // get postid and post url from parent
+    const { url } = this.props;
     // Render number of post image and post owner
-    
+    // console.log('url for post %d', postid);
     return (
       <div className="post">
         <div>
@@ -150,8 +137,6 @@ class Post extends React.Component {
             <img src={ownerImgUrl} alt="owner_img_url" className="owner_img" />
           </a>
           <a href={ownerShowUrl}>{owner}</a>
-        </div>
-        <div>
           <a href={postShowUrl}>
             <p>{Moment.utc(created, 'YYYY-MM-DD hh:mm:ss').fromNow()}</p>
           </a>
@@ -163,11 +148,9 @@ class Post extends React.Component {
           <Likes
             lognameLikesThis={lognameLikesThis}
             numLikes={numLikes}
-            likeUrl={likeUrl}
             onClick={this.handleClick}
-            postid={postid}
           />
-          <Comments comments={comments} postid={postid} url={url} />
+          <Comments url={url} postid={postid} />
         </div>
       </div>
     );
@@ -176,7 +159,6 @@ class Post extends React.Component {
 
 Post.propTypes = {
   url: PropTypes.string.isRequired,
-  postid: PropTypes.number.isRequired,
 };
 
 export default Post;

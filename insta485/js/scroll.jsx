@@ -10,20 +10,18 @@ class InScroll extends React.Component {
     super(props);
     // mutable items
     this.state = {
-      next: '', // next url
+      next: '',
       results: [],
-      //url: '' // current url
     };
     this.fetchposts = this.fetchposts.bind(this);
   }
 
   componentDidMount() {
-    if (PerformanceNavigationTiming.type === 'back_forward') {
+    if (String(window.performance.getEntriesByType('navigation')[0].type) === 'back_forward') {
       this.setState({
-        next: history.state.next,
-        results: history.state.results,
+        next: window.history.state.next,
+        results: window.history.state.results,
       });
-      return;
     }
     const { url } = this.props;
     fetch(url, { credentials: 'same-origin' })
@@ -38,7 +36,6 @@ class InScroll extends React.Component {
         });
       })
       .catch((error) => console.log(error));
-      history.pushState(this.state, '')
   }
 
   fetchposts() {
@@ -51,27 +48,27 @@ class InScroll extends React.Component {
       .then((data) => {
         this.setState({
           next: data.next,
-          results: results.concat(data.results)
+          results: results.concat(data.results),
         });
       })
       .catch((error) => console.log(error));
-      history.pushState(this.state, '')
   }
 
   render() {
     // user has navigated back
     const { results, next } = this.state;
-    console.log('url from parent is', results.url);
     return (
       <div className="Scroll">
         <InfiniteScroll
           dataLength={results.length}
           next={this.fetchposts}
-          hasMore={next != ''}
+          hasMore={next !== ''}
           loader={<h4>Loading...</h4>}
         >
-          {results.map((result) => ( // missing key
-            <Post key={result.postid.toString()} postid={result.postid} url={result.url} />
+          {results.map((result) => (
+            <div key={result.postid}>
+              <Post url={result.url} />
+            </div>
           ))}
         </InfiniteScroll>
       </div>

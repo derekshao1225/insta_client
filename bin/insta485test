@@ -13,6 +13,9 @@ pycodestyle insta485
 # Run pydocstyle insta485
 pydocstyle insta485
 
+#Run npx eslint --ext jsx insta485/js/ to check the JSX style
+npx eslint --ext jsx insta485/js/
+
 # Run pylint --disable=cyclic-import --unsafe-load-any-extension=y --disable=assigning-non-slot insta485
 pylint --disable=cyclic-import --unsafe-load-any-extension=y --disable=assigning-non-slot insta485
 

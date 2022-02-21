@@ -4,11 +4,9 @@ import PropTypes from 'prop-types';
 class Comments extends React.Component {
   constructor(props) {
     super(props);
-    const { comments } = this.props;
-    const { postid } = this.props;
     this.state = {
-      commentsState: comments,
-      postID: postid,
+      commentsState: [],
+      // postID: 0,
       value: '',
     };
   }
@@ -16,28 +14,30 @@ class Comments extends React.Component {
   // value is the input_text from the user
 
   componentDidMount() {
-    // const { url } = this.props;
+    const { url } = this.props;
     // const {  } = this.props;
-    const { postid } = this.props;
+    // const { postid } = this.props;
     // const { comments } = this.props;
-    const url = `/api/v1/posts/${postid}/`;
+    // const url = `/api/v1/posts/${postid}/`;
     // this.setState({ commentsState: comments });
     // Call REST API to get the post's information
-    console.log('url', url);
+    // console.log('comment url fetching for post', url);
     fetch(url, { credentials: 'same-origin' })
       .then((response) => {
         if (!response.ok) throw Error(response.statusText);
-        // return response.json();
+        return response.json();
       })
       .then((data) => {
         this.setState({
           commentsState: data.comments,
           value: '',
         });
-        const { commentsState } = this.state;
-        console.log('Comments', commentsState);
+        // const { commentsState } = this.state;
+        // console.log('Comments fetched', data.comments);
       })
       .catch((error) => console.log(error));
+    // const { commentsState } = this.state;
+    // console.log('Comments', commentsState);
   }
 
   handleChange(event) {
@@ -53,11 +53,13 @@ class Comments extends React.Component {
         // return response.json();
       })
       .then(() => {
-        console.log('deleting comment');
-        this.setState((prevState) => ({
-          commentsState: prevState.commentsState.splice((comment) => comment.commentid
-            !== commentid),
-        }));
+        console.log('deleting comment', cururl);
+        const { commentsState } = this.state;
+        this.setState({
+          commentsState: commentsState.filter(
+            (comment) => comment.commentid !== commentid,
+          ),
+        });
       })
       .catch((error) => console.log(error));
   }
@@ -80,6 +82,7 @@ class Comments extends React.Component {
         return response.json();
       })
       .then((data) => {
+        console.log(data);
         this.setState((prevState) => ({
           commentsState: prevState.commentsState.concat(data),
           value: '',
@@ -89,19 +92,10 @@ class Comments extends React.Component {
   }
 
   render() {
-    const { comments } = this.props;
-    const { value } = this.state;
-    const { commentsState } = this.state;
+    // const { comments } = this.props;
+    const { commentsState, value } = this.state;
     return (
       <div className="commentContent">
-        {/* {console.log(comments)} */}
-        {comments.map((item) => (
-          <p key={item.commentid}>
-            <a href={item.ownerShowUrl}>{item.owner}</a>
-            {item.text}
-            {item.lognameOwnsThis ? (<button type="button" className="delete-comment-button" onClick={this.handleDelete.bind(this, item.commentid)}> Delete comment </button>) : null}
-          </p>
-        ))}
         {commentsState.map((item) => (
           <p key={item.commentid}>
             <a href={item.ownerShowUrl}>{item.owner}</a>
@@ -118,16 +112,16 @@ class Comments extends React.Component {
 }
 
 Comments.propTypes = {
-  comments: PropTypes.arrayOf(
-    PropTypes.shape({
-      commentid: PropTypes.number.isRequired,
-      lognameOwnsThis: PropTypes.bool.isRequired,
-      owner: PropTypes.string.isRequired,
-      ownerShowUrl: PropTypes.string.isRequired,
-      text: PropTypes.string.isRequired,
-      url: PropTypes.string.isRequired,
-    }),
-  ).isRequired,
+  // comments: PropTypes.arrayOf(
+  //   PropTypes.shape({
+  //     commentid: PropTypes.number.isRequired,
+  //     lognameOwnsThis: PropTypes.bool.isRequired,
+  //     owner: PropTypes.string.isRequired,
+  //     ownerShowUrl: PropTypes.string.isRequired,
+  //     text: PropTypes.string.isRequired,
+  //     url: PropTypes.string.isRequired,
+  //   }),
+  // ).isRequired,
   postid: PropTypes.number.isRequired,
   url: PropTypes.string.isRequired,
 };

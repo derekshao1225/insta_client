@@ -44,11 +44,9 @@ var Comments = /*#__PURE__*/function (_React$Component) {
     (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, Comments);
 
     _this = _super.call(this, props);
-    var comments = _this.props.comments;
-    var postid = _this.props.postid;
     _this.state = {
-      commentsState: comments,
-      postID: postid,
+      commentsState: [],
+      // postID: 0,
       value: ''
     };
     return _this;
@@ -60,29 +58,30 @@ var Comments = /*#__PURE__*/function (_React$Component) {
     value: function componentDidMount() {
       var _this2 = this;
 
-      // const { url } = this.props;
-      // const {  } = this.props;
-      var postid = this.props.postid; // const { comments } = this.props;
-
-      var url = "/api/v1/posts/".concat(postid, "/"); // this.setState({ commentsState: comments });
+      var url = this.props.url; // const {  } = this.props;
+      // const { postid } = this.props;
+      // const { comments } = this.props;
+      // const url = `/api/v1/posts/${postid}/`;
+      // this.setState({ commentsState: comments });
       // Call REST API to get the post's information
+      // console.log('comment url fetching for post', url);
 
-      console.log('url', url);
       fetch(url, {
         credentials: 'same-origin'
       }).then(function (response) {
-        if (!response.ok) throw Error(response.statusText); // return response.json();
+        if (!response.ok) throw Error(response.statusText);
+        return response.json();
       }).then(function (data) {
         _this2.setState({
           commentsState: data.comments,
           value: ''
-        });
+        }); // const { commentsState } = this.state;
+        // console.log('Comments fetched', data.comments);
 
-        var commentsState = _this2.state.commentsState;
-        console.log('Comments', commentsState);
       })["catch"](function (error) {
         return console.log(error);
-      });
+      }); // const { commentsState } = this.state;
+      // console.log('Comments', commentsState);
     }
   }, {
     key: "handleChange",
@@ -107,14 +106,13 @@ var Comments = /*#__PURE__*/function (_React$Component) {
       }).then(function (response) {
         if (!response.ok) throw Error(response.statusText); // return response.json();
       }).then(function () {
-        console.log('deleting comment');
+        console.log('deleting comment', cururl);
+        var commentsState = _this3.state.commentsState;
 
-        _this3.setState(function (prevState) {
-          return {
-            commentsState: prevState.commentsState.splice(function (comment) {
-              return comment.commentid !== commentid;
-            })
-          };
+        _this3.setState({
+          commentsState: commentsState.filter(function (comment) {
+            return comment.commentid !== commentid;
+          })
         });
       })["catch"](function (error) {
         return console.log(error);
@@ -144,6 +142,8 @@ var Comments = /*#__PURE__*/function (_React$Component) {
         if (!response.ok) throw Error(response.statusText);
         return response.json();
       }).then(function (data) {
+        console.log(data);
+
         _this4.setState(function (prevState) {
           return {
             commentsState: prevState.commentsState.concat(data),
@@ -159,22 +159,13 @@ var Comments = /*#__PURE__*/function (_React$Component) {
     value: function render() {
       var _this5 = this;
 
-      var comments = this.props.comments;
-      var value = this.state.value;
-      var commentsState = this.state.commentsState;
+      // const { comments } = this.props;
+      var _this$state = this.state,
+          commentsState = _this$state.commentsState,
+          value = _this$state.value;
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_5__.createElement("div", {
         className: "commentContent"
-      }, comments.map(function (item) {
-        return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_5__.createElement("p", {
-          key: item.commentid
-        }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_5__.createElement("a", {
-          href: item.ownerShowUrl
-        }, item.owner), item.text, item.lognameOwnsThis ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_5__.createElement("button", {
-          type: "button",
-          className: "delete-comment-button",
-          onClick: _this5.handleDelete.bind(_this5, item.commentid)
-        }, " Delete comment ") : null);
-      }), commentsState.map(function (item) {
+      }, commentsState.map(function (item) {
         return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_5__.createElement("p", {
           key: item.commentid
         }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_5__.createElement("a", {
@@ -201,14 +192,16 @@ var Comments = /*#__PURE__*/function (_React$Component) {
 }(react__WEBPACK_IMPORTED_MODULE_5__.Component);
 
 Comments.propTypes = {
-  comments: prop_types__WEBPACK_IMPORTED_MODULE_6___default().arrayOf(prop_types__WEBPACK_IMPORTED_MODULE_6___default().shape({
-    commentid: (prop_types__WEBPACK_IMPORTED_MODULE_6___default().number.isRequired),
-    lognameOwnsThis: (prop_types__WEBPACK_IMPORTED_MODULE_6___default().bool.isRequired),
-    owner: (prop_types__WEBPACK_IMPORTED_MODULE_6___default().string.isRequired),
-    ownerShowUrl: (prop_types__WEBPACK_IMPORTED_MODULE_6___default().string.isRequired),
-    text: (prop_types__WEBPACK_IMPORTED_MODULE_6___default().string.isRequired),
-    url: (prop_types__WEBPACK_IMPORTED_MODULE_6___default().string.isRequired)
-  })).isRequired,
+  // comments: PropTypes.arrayOf(
+  //   PropTypes.shape({
+  //     commentid: PropTypes.number.isRequired,
+  //     lognameOwnsThis: PropTypes.bool.isRequired,
+  //     owner: PropTypes.string.isRequired,
+  //     ownerShowUrl: PropTypes.string.isRequired,
+  //     text: PropTypes.string.isRequired,
+  //     url: PropTypes.string.isRequired,
+  //   }),
+  // ).isRequired,
   postid: (prop_types__WEBPACK_IMPORTED_MODULE_6___default().number.isRequired),
   url: (prop_types__WEBPACK_IMPORTED_MODULE_6___default().string.isRequired)
 };
@@ -229,24 +222,24 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
 /* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
-/* harmony import */ var _babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/inherits */ "./node_modules/@babel/runtime/helpers/esm/inherits.js");
-/* harmony import */ var _babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/possibleConstructorReturn */ "./node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js");
-/* harmony import */ var _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @babel/runtime/helpers/getPrototypeOf */ "./node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js");
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/assertThisInitialized */ "./node_modules/@babel/runtime/helpers/esm/assertThisInitialized.js");
+/* harmony import */ var _babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/inherits */ "./node_modules/@babel/runtime/helpers/esm/inherits.js");
+/* harmony import */ var _babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @babel/runtime/helpers/possibleConstructorReturn */ "./node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js");
+/* harmony import */ var _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @babel/runtime/helpers/getPrototypeOf */ "./node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_7__);
 
 
 
 
 
 
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_4__["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_4__["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0,_babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_3__["default"])(this, result); }; }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_5__["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_5__["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0,_babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_4__["default"])(this, result); }; }
 
 function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-// import React from 'react';
-// import PropTypes from 'prop-types';
 // function Likes({ lognameLikesThis, numLikes, onClick }) {
 //   return (
 //     <div>
@@ -278,41 +271,51 @@ function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Re
 
 
 var Likes = /*#__PURE__*/function (_React$Component) {
-  (0,_babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_2__["default"])(Likes, _React$Component);
+  (0,_babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_3__["default"])(Likes, _React$Component);
 
   var _super = _createSuper(Likes);
 
   function Likes(props) {
+    var _this;
+
     (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, Likes);
 
     // Initialize mutable state
-    return _super.call(this, props);
+    _this = _super.call(this, props);
+    _this.handleClick = _this.handleClick.bind((0,_babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_2__["default"])(_this));
+    return _this;
   }
 
   (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Likes, [{
+    key: "handleClick",
+    value: function handleClick() {
+      var onClick = this.props.onClick;
+      onClick();
+    }
+  }, {
     key: "render",
     value: function render() {
       var _this$props = this.props,
           lognameLikesThis = _this$props.lognameLikesThis,
           numLikes = _this$props.numLikes; // display number of likes
 
-      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_5__.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_5__.createElement("button", {
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_6__.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_6__.createElement("button", {
         type: "button",
         className: "like-unlike-button",
-        onClick: this.props.onClick
-      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_5__.createElement("p", null, lognameLikesThis ? 'unlike' : 'like')), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_5__.createElement("div", {
+        onClick: this.handleClick
+      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_6__.createElement("p", null, lognameLikesThis ? 'unlike' : 'like')), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_6__.createElement("div", {
         className: "likes"
-      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_5__.createElement("p", null, numLikes, ' ', "like", numLikes !== 1 ? 's' : '')));
+      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_6__.createElement("p", null, numLikes, ' ', "like", numLikes !== 1 ? 's' : '')));
     }
   }]);
 
   return Likes;
-}(react__WEBPACK_IMPORTED_MODULE_5__.Component);
+}(react__WEBPACK_IMPORTED_MODULE_6__.Component);
 
 Likes.propTypes = {
-  lognameLikesThis: (prop_types__WEBPACK_IMPORTED_MODULE_6___default().bool.isRequired),
-  numLikes: (prop_types__WEBPACK_IMPORTED_MODULE_6___default().number.isRequired),
-  onClick: (prop_types__WEBPACK_IMPORTED_MODULE_6___default().func.isRequired)
+  lognameLikesThis: (prop_types__WEBPACK_IMPORTED_MODULE_7___default().bool.isRequired),
+  numLikes: (prop_types__WEBPACK_IMPORTED_MODULE_7___default().number.isRequired),
+  onClick: (prop_types__WEBPACK_IMPORTED_MODULE_7___default().func.isRequired)
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Likes);
 
@@ -372,11 +375,9 @@ var Post = /*#__PURE__*/function (_React$Component) {
     (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, Post);
 
     // Initialize immutable
-    _this = _super.call(this, props); // key, postid, url
-    // mutable items
+    _this = _super.call(this, props); // mutable items
 
     _this.state = {
-      comments: [],
       created: '',
       imgUrl: '',
       lognameLikesThis: false,
@@ -385,7 +386,8 @@ var Post = /*#__PURE__*/function (_React$Component) {
       owner: '',
       ownerImgUrl: '',
       ownerShowUrl: '',
-      postShowUrl: ''
+      postShowUrl: '',
+      postid: 1
     };
     _this.handleClick = _this.handleClick.bind((0,_babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_2__["default"])(_this));
     _this.handleDoubleClick = _this.handleDoubleClick.bind((0,_babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_2__["default"])(_this));
@@ -398,8 +400,7 @@ var Post = /*#__PURE__*/function (_React$Component) {
       var _this2 = this;
 
       // This line automatically assigns this.props.url to the const variable url
-      var url = this.props.url;
-      console.log('url is %s', url); // Call REST API to get the post's information
+      var url = this.props.url; // Call REST API to get the post's information
 
       fetch(url, {
         credentials: 'same-origin'
@@ -408,7 +409,6 @@ var Post = /*#__PURE__*/function (_React$Component) {
         return response.json();
       }).then(function (data) {
         _this2.setState({
-          comments: data.comments,
           created: data.created,
           imgUrl: data.imgUrl,
           lognameLikesThis: data.likes.lognameLikesThis,
@@ -418,14 +418,11 @@ var Post = /*#__PURE__*/function (_React$Component) {
           ownerImgUrl: data.ownerImgUrl,
           ownerShowUrl: data.ownerShowUrl,
           postShowUrl: data.postShowUrl,
-          postid: data.postid,
-          url: data.url
+          postid: data.postid
         });
       })["catch"](function (error) {
         return console.log(error);
       });
-      console.log('from fetch url for post %d', this.state.postid);
-      console.log('from fetch num of likes %d', this.state.numLikes);
     }
   }, {
     key: "handleClick",
@@ -434,11 +431,31 @@ var Post = /*#__PURE__*/function (_React$Component) {
 
       var _this$state = this.state,
           lognameLikesThis = _this$state.lognameLikesThis,
-          numLikes = _this$state.numLikes;
-      var postid = this.props.postid;
-      var pUrl = "/api/v1/likes/?postid=".concat(postid); // user cannot dislike
+          numLikes = _this$state.numLikes,
+          likeUrl = _this$state.likeUrl,
+          postid = _this$state.postid; // user dislikes
+      // console.log('Like url is ', likeUrl);
+      // console.log('lognamelikesthis is ', lognameLikesThis);
 
-      if (!lognameLikesThis) {
+      if (lognameLikesThis) {
+        fetch(likeUrl, {
+          credentials: 'same-origin',
+          method: 'DELETE'
+        }).then(function (response) {
+          if (!response.ok) throw Error(response.statusText); // return response.json();
+        }).then(function () {
+          _this3.setState({
+            lognameLikesThis: false,
+            numLikes: numLikes - 1,
+            likeUrl: 'null'
+          });
+        })["catch"](function (error) {
+          return console.log(error);
+        });
+      } else {
+        // user likes
+        var pUrl = "/api/v1/likes/?postid=".concat(postid); // console.log('Liking url is ', pUrl);
+
         fetch(pUrl, {
           credentials: 'same-origin',
           method: 'POST'
@@ -446,25 +463,12 @@ var Post = /*#__PURE__*/function (_React$Component) {
           if (!response.ok) throw Error(response.statusText);
           return response.json();
         }).then(function (data) {
+          console.log('fetched ', data);
+
           _this3.setState({
             lognameLikesThis: true,
             numLikes: numLikes + 1,
-            url: data.url
-          });
-        })["catch"](function (error) {
-          return console.log(error);
-        });
-      } else {
-        fetch(pUrl, {
-          credentials: 'same-origin',
-          method: 'DELETE'
-        }).then(function (response) {
-          if (!response.ok) throw Error(response.statusText);
-        }).then(function () {
-          _this3.setState({
-            lognameLikesThis: false,
-            numLikes: numLikes - 1,
-            url: pUrl
+            likeUrl: data.url
           });
         })["catch"](function (error) {
           return console.log(error);
@@ -478,8 +482,8 @@ var Post = /*#__PURE__*/function (_React$Component) {
 
       var _this$state2 = this.state,
           lognameLikesThis = _this$state2.lognameLikesThis,
-          numLikes = _this$state2.numLikes;
-      var postid = this.props.postid;
+          numLikes = _this$state2.numLikes,
+          postid = _this$state2.postid;
       var pUrl = "/api/v1/likes/?postid=".concat(postid); // user cannot dislike
 
       if (!lognameLikesThis) {
@@ -493,22 +497,7 @@ var Post = /*#__PURE__*/function (_React$Component) {
           _this4.setState({
             lognameLikesThis: true,
             numLikes: numLikes + 1,
-            url: data.url
-          });
-        })["catch"](function (error) {
-          return console.log(error);
-        });
-      } else {
-        fetch(pUrl, {
-          credentials: 'same-origin',
-          method: 'DELETE'
-        }).then(function (response) {
-          if (!response.ok) throw Error(response.statusText);
-        }).then(function () {
-          _this4.setState({
-            lognameLikesThis: false,
-            numLikes: numLikes - 1,
-            url: pUrl
+            likeUrl: data.url
           });
         })["catch"](function (error) {
           return console.log(error);
@@ -521,20 +510,17 @@ var Post = /*#__PURE__*/function (_React$Component) {
       // This line automatically assigns this.state.imgUrl to the const variable imgUrl
       // and this.state.owner to the const variable owner
       var _this$state3 = this.state,
-          comments = _this$state3.comments,
           created = _this$state3.created,
           imgUrl = _this$state3.imgUrl,
           lognameLikesThis = _this$state3.lognameLikesThis,
           numLikes = _this$state3.numLikes,
-          likeUrl = _this$state3.likeUrl,
           owner = _this$state3.owner,
           ownerImgUrl = _this$state3.ownerImgUrl,
           ownerShowUrl = _this$state3.ownerShowUrl,
-          postShowUrl = _this$state3.postShowUrl;
-      var _this$props = this.props,
-          postid = _this$props.postid,
-          url = _this$props.url; // get postid and post url from parent
-      // Render number of post image and post owner
+          postShowUrl = _this$state3.postShowUrl,
+          postid = _this$state3.postid;
+      var url = this.props.url; // Render number of post image and post owner
+      // console.log('url for post %d', postid);
 
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_6__.createElement("div", {
         className: "post"
@@ -546,7 +532,7 @@ var Post = /*#__PURE__*/function (_React$Component) {
         className: "owner_img"
       })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_6__.createElement("a", {
         href: ownerShowUrl
-      }, owner)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_6__.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_6__.createElement("a", {
+      }, owner), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_6__.createElement("a", {
         href: postShowUrl
       }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_6__.createElement("p", null, moment__WEBPACK_IMPORTED_MODULE_7___default().utc(created, 'YYYY-MM-DD hh:mm:ss').fromNow()))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_6__.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_6__.createElement("img", {
         src: imgUrl,
@@ -556,13 +542,10 @@ var Post = /*#__PURE__*/function (_React$Component) {
       })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_6__.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_6__.createElement(_likes__WEBPACK_IMPORTED_MODULE_8__["default"], {
         lognameLikesThis: lognameLikesThis,
         numLikes: numLikes,
-        likeUrl: likeUrl,
-        onClick: this.handleClick,
-        postid: postid
+        onClick: this.handleClick
       }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_6__.createElement(_comments__WEBPACK_IMPORTED_MODULE_9__["default"], {
-        comments: comments,
-        postid: postid,
-        url: url
+        url: url,
+        postid: postid
       })));
     }
   }]);
@@ -571,8 +554,7 @@ var Post = /*#__PURE__*/function (_React$Component) {
 }(react__WEBPACK_IMPORTED_MODULE_6__.Component);
 
 Post.propTypes = {
-  url: (prop_types__WEBPACK_IMPORTED_MODULE_10___default().string.isRequired),
-  postid: (prop_types__WEBPACK_IMPORTED_MODULE_10___default().number.isRequired)
+  url: (prop_types__WEBPACK_IMPORTED_MODULE_10___default().string.isRequired)
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Post);
 
@@ -632,9 +614,7 @@ var InScroll = /*#__PURE__*/function (_React$Component) {
 
     _this.state = {
       next: '',
-      // next url
-      results: [] //url: '' // current url
-
+      results: []
     };
     _this.fetchposts = _this.fetchposts.bind((0,_babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_2__["default"])(_this));
     return _this;
@@ -645,12 +625,11 @@ var InScroll = /*#__PURE__*/function (_React$Component) {
     value: function componentDidMount() {
       var _this2 = this;
 
-      if (PerformanceNavigationTiming.type === 'back_forward') {
+      if (String(window.performance.getEntriesByType('navigation')[0].type) === 'back_forward') {
         this.setState({
-          next: history.state.next,
-          results: history.state.results
+          next: window.history.state.next,
+          results: window.history.state.results
         });
-        return;
       }
 
       var url = this.props.url;
@@ -667,7 +646,6 @@ var InScroll = /*#__PURE__*/function (_React$Component) {
       })["catch"](function (error) {
         return console.log(error);
       });
-      history.pushState(this.state, '');
     }
   }, {
     key: "fetchposts",
@@ -690,7 +668,6 @@ var InScroll = /*#__PURE__*/function (_React$Component) {
       })["catch"](function (error) {
         return console.log(error);
       });
-      history.pushState(this.state, '');
     }
   }, {
     key: "render",
@@ -699,24 +676,19 @@ var InScroll = /*#__PURE__*/function (_React$Component) {
       var _this$state2 = this.state,
           results = _this$state2.results,
           next = _this$state2.next;
-      console.log('url from parent is', results.url);
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_6__.createElement("div", {
         className: "Scroll"
       }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_6__.createElement(react_infinite_scroll_component__WEBPACK_IMPORTED_MODULE_7__["default"], {
         dataLength: results.length,
         next: this.fetchposts,
-        hasMore: next != '',
+        hasMore: next !== '',
         loader: /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_6__.createElement("h4", null, "Loading...")
       }, results.map(function (result) {
-        return (
-          /*#__PURE__*/
-          // missing key
-          react__WEBPACK_IMPORTED_MODULE_6__.createElement(_post__WEBPACK_IMPORTED_MODULE_8__["default"], {
-            key: result.postid.toString(),
-            postid: result.postid,
-            url: result.url
-          })
-        );
+        return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_6__.createElement("div", {
+          key: result.postid
+        }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_6__.createElement(_post__WEBPACK_IMPORTED_MODULE_8__["default"], {
+          url: result.url
+        }));
       })));
     }
   }]);

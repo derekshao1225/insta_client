@@ -126,7 +126,8 @@ def form_post(postid_url_slug):
             "FROM likes "
             "WHERE likes.owner=? AND likes.postid=?",
             (logname, postid_url_slug))
-        like_url = "/api/v1/likes/" + str(cur.fetchall()[0]['likeid']) + "/"
+        l_url = cur.fetchall()[0]['likeid']
+        like_url = "/api/v1/likes/" + str(l_url) + "/"
     cur = connection.execute(
         "SELECT COUNT(*) AS numlike "
         "FROM likes "
@@ -134,15 +135,18 @@ def form_post(postid_url_slug):
         (postid_url_slug, ))
     context = {}
     comments_info = []
+    # ownership = False
     for comment in comments:
-        ownership = bool(comment['owner'] == logname)
-        cmt = {"commentid": comment['commentid'],
-               "lognameOwnsThis": ownership,
-               "owner": comment['owner'],
-               "ownerShowUrl": "/users/" + comment['owner'] + "/",
-               "text": comment['text'],
-               "url": "/api/v1/comments/" + str(comment['commentid']) + "/"}
-        comments_info.append(cmt)
+        # ownership = bool(comment['owner'] == logname)
+        temp_comment = {
+            "commentid": comment['commentid'],
+            "lognameOwnsThis": bool(comment['owner'] == logname),
+            "owner": comment['owner'],
+            "ownerShowUrl": "/users/" + comment['owner'] + "/",
+            "text": comment['text'],
+            "url": "/api/v1/comments/" + str(comment['commentid']) + "/"
+        }
+        comments_info.append(temp_comment)
     likes_info = {"lognameLikesThis": user_like,
                   "numLikes": cur.fetchall()[0]['numlike'],
                   "url": like_url}

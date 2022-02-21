@@ -28,9 +28,9 @@ def post_comment():
     cur = connection.execute(
         "SELECT last_insert_rowid() as last FROM comments ")
     last_insert = cur.fetchall()[0]['last']
-    insert_id = 1
+    insert_id = 0
     if last_insert is not None:
-        insert_id = last_insert + 1
+        insert_id = last_insert
     # prepare new comment to be added
     new_cmt = {
         "commentid": insert_id,

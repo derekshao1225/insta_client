@@ -1,21 +1,16 @@
 #!/bin/bash
-
-# Stop on errors
+#
+#Stop on errors, print commands
 set -Eeuo pipefail
 set -x
-
-# Virtual environment
+#Create a Python virtual environment
 python3 -m venv env
-
-# Activate
+#Activate Python virtual environment
 source env/bin/activate
-
-# Back end
+#Install back end
 pip install -r requirements.txt
 pip install -e .
-
-# Front end
+#Install front end
 npm ci .
-
-# Dependencies
+#Install the latest chromedriver using npm.
 npm install chromedriver --detect_chromedriver_version --no-save

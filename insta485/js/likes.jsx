@@ -1,6 +1,3 @@
-// import React from 'react';
-// import PropTypes from 'prop-types';
-
 // function Likes({ lognameLikesThis, numLikes, onClick }) {
 //   return (
 //     <div>
@@ -38,6 +35,12 @@ class Likes extends React.Component {
   constructor(props) {
     // Initialize mutable state
     super(props);
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick() {
+    const { onClick } = this.props;
+    onClick();
   }
 
   render() {
@@ -45,7 +48,7 @@ class Likes extends React.Component {
     // display number of likes
     return (
       <div>
-        <button type="button" className="like-unlike-button" onClick={this.props.onClick}>
+        <button type="button" className="like-unlike-button" onClick={this.handleClick}>
           <p>{lognameLikesThis ? 'unlike' : 'like'}</p>
         </button>
 

@@ -81,10 +81,10 @@ def like_outbound(likeid):
     """Check likeid validity, true out of bound false valid."""
     connection = insta485.model.get_db()
     cur = connection.execute(
-        "SELECT max(likeid) as max_id "
+        "SELECT max(likeid) as MAX_ID "
         "FROM likes")
-    max_id = cur.fetchall()[0]['max_id']
-    return int(max_id) < int(likeid) or int(likeid) <= 0
+    maxid = cur.fetchall()[0]['MAX_ID']
+    return int(maxid) < int(likeid) or int(likeid) <= 0
 ################################################################
 
 
@@ -95,13 +95,13 @@ def authentication():
         if 'username' not in flask.session:
             return flask.jsonify(**report_status(403)), 403
         # does nothing if session is already signed in
-        logname = flask.session['username']
+        username = flask.session['username']
     # http access authentication on
     else:
         if 'username' not in flask.session:
-            logname = flask.request.authorization['username']
+            username = flask.request.authorization['username']
             password = flask.request.authorization['password']
             # check password
-            if invalid_credential(logname, password):
+            if invalid_credential(username, password):
                 return flask.jsonify(**report_status(403)), 403
-    return logname
+    return username
